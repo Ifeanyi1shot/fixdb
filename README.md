@@ -10,9 +10,21 @@ Stop re-solving the same infrastructure errors from scratch. When you hit a cryp
 npm install -g fixdb
 fixdb scan terraform-apply.log
 fixdb scan --tool kubernetes "CrashLoopBackOff"
+fixdb update              # pull the latest knowledge base entries from GitHub
 ```
 
 The install ships with a bundled snapshot of the [knowledge base](./knowledge-base), seeded into `~/.fixdb/knowledge-base` on first use — matching works fully offline right away. Run `fixdb update` at any time to pull the latest entries from GitHub into that cache (defaults to this repo; point it elsewhere with `--repo <owner/repo> --ref <branch>`). Sync failures never block a scan — the CLI just falls back to the last-cached copy.
+
+### Enabling the AI fallback
+
+When nothing in the knowledge base matches, `fixdb` can ask Claude for a best-guess diagnosis instead of giving up — but only if it finds an API key:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+fixdb scan --tool terraform "some error nobody's documented yet"
+```
+
+This is entirely optional — without the key set, `fixdb` still does full offline knowledge-base matching, it just won't offer a guess on a miss. The error text is only ever sent anywhere in this one case, and only to the Anthropic API.
 
 Not published to npm yet? Build and run from source instead:
 
