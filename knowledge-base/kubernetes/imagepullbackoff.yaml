@@ -1,0 +1,17 @@
+id: k8s-imagepullbackoff
+tool: kubernetes
+signature: "imagepullbackoff|errimagepull"
+title: "Pod can't pull its container image"
+cause: >
+  The kubelet cannot pull the specified image. Usually this is either a
+  typo'd image name/tag, the image not existing in the registry, or missing
+  registry authentication (imagePullSecrets not set or expired credentials).
+fix: |
+  Confirm the exact reason:
+    kubectl describe pod <pod-name> -n <namespace>
+  Check the "Events" section for the specific pull error. If it's an auth
+  issue on a private registry, verify the imagePullSecrets is attached to
+  the pod's service account and the credentials haven't expired:
+    kubectl get secret <pull-secret-name> -n <namespace> -o yaml
+tags: [kubernetes, pods, registry, authentication]
+confirmed_by: 1

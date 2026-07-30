@@ -1,0 +1,18 @@
+id: k8s-crashloopbackoff-oomkilled
+tool: kubernetes
+signature: "crashloopbackoff"
+title: "Pod stuck in CrashLoopBackOff"
+cause: >
+  The container is repeatedly starting and crashing. The most common causes
+  are the container process exiting immediately (bad command/entrypoint,
+  missing config/secret), a failing health check, or the container being
+  OOMKilled due to a memory limit set too low for the workload.
+fix: |
+  Check the actual reason first:
+    kubectl describe pod <pod-name> -n <namespace>
+    kubectl logs <pod-name> -n <namespace> --previous
+  If the describe output shows "OOMKilled", raise the memory limit in the
+  pod spec's resources.limits.memory. If it's a missing config/secret or
+  bad entrypoint, the previous logs will usually show the real startup error.
+tags: [kubernetes, pods, oom, debugging]
+confirmed_by: 1

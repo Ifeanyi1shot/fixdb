@@ -1,0 +1,19 @@
+id: gha-oidc-permission-denied
+tool: github-actions
+signature: "error: failed to get id token|no id token found"
+title: "Workflow can't obtain an OIDC token for federated login"
+cause: >
+  The workflow job is trying to authenticate to a cloud provider using
+  OIDC (e.g. azure/login with federated credentials) but GitHub Actions
+  hasn't granted the job permission to request an ID token — this needs to
+  be explicitly declared, it isn't on by default.
+fix: |
+  Add the id-token permission to the job (or workflow) in the YAML:
+    permissions:
+      id-token: write
+      contents: read
+  Then confirm the federated credential on the cloud side (e.g. an Azure AD
+  app registration's federated credential) has a subject claim that exactly
+  matches the repo, branch, and environment the job is running under.
+tags: [github-actions, oidc, ci-cd, authentication]
+confirmed_by: 1

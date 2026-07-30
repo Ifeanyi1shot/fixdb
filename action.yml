@@ -1,0 +1,56 @@
+name: "fixdb scan"
+description: "Diagnose a failed workflow's error against the fixdb knowledge base and post a comment"
+
+inputs:
+  log-path:
+    description: "Path to the log file to scan"
+    required: true
+  tool:
+    description: "Restrict matching to a specific tool (terraform | kubernetes | github-actions)"
+    required: false
+  github-token:
+    description: "Token used to post the diagnosis as a PR/run comment"
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install fixdb
+      shell: bash
+      run: npm install -g fixdb
+
+    - name: Run scan
+      id: scan
+      shell: bash
+      env:
+        LOG_PATH: ${{ inputs.log-path }}
+        TOOL: ${{ inputs.tool }}
+      run: |
+        if [ -n "$TOOL" ]; then
+          RESULT=$(fixdb scan "$LOG_PATH" --tool "$TOOL")
+        else
+          RESULT=$(fixdb scan "$LOG_PATH")
+        fi
+        echo "$RESULT"
+        {
+          echo "result<<EOF"
+          echo "$RESULT"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Comment diagnosis on the PR
+      if: github.event.pull_request
+      uses: actions/github-script@v7
+      env:
+        RESULT: ${{ steps.scan.outputs.result }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const body = `### fixdb diagnosis\n\n\`\`\`\n${process.env.RESULT}\n\`\`\``;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body,
+          });

@@ -1,0 +1,17 @@
+id: tf-azurerm-403-provider-registration
+tool: terraform
+provider: azurerm
+signature: "authorizationfailed.*providers/read"
+title: "Service principal missing Resource Provider read permission"
+cause: >
+  The service principal or federated identity Terraform is using doesn't have
+  rights to list resource provider registration status on the target
+  subscription. This commonly happens with newly created service principals
+  or when OIDC federated credentials are scoped too narrowly.
+fix: |
+  Grant the identity the "Reader" role at the subscription scope:
+    az role assignment create --assignee <client-id> --role Reader --scope /subscriptions/<subscription-id>
+  If using OIDC federated credentials, confirm the federated credential's
+  subject claim matches the exact branch/environment running the pipeline.
+tags: [azure, rbac, terraform, oidc, authentication]
+confirmed_by: 1

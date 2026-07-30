@@ -1,0 +1,4 @@
+node_modules/
+dist/
+fixdb-contributions/
+*.tgz

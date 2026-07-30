@@ -1,0 +1,19 @@
+id: tf-yq-hyphenated-key-error
+tool: terraform
+provider: azurerm
+signature: "(bad character|unexpected character).*['\"]-['\"]"
+title: "yq fails to parse YAML keys containing hyphens"
+cause: >
+  When scripting updates to a YAML file (e.g. a sites.yaml inventory) using
+  yq's dot-notation path syntax, keys containing hyphens (common in Azure
+  resource group names) break the default path parser, since yq interprets
+  the hyphen as an operator rather than part of the key name.
+fix: |
+  Use bracket notation with quotes instead of dot notation for any key
+  containing a hyphen:
+    # Fails:
+    yq '.sites.my-resource-group.region' sites.yaml
+    # Works:
+    yq '.sites["my-resource-group"].region' sites.yaml
+tags: [yq, yaml, terraform, scripting, ci-cd]
+confirmed_by: 1

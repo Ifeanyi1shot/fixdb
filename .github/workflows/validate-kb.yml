@@ -1,0 +1,58 @@
+name: Validate knowledge base entries
+
+on:
+  pull_request:
+    paths:
+      - "knowledge-base/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate YAML schema
+        run: |
+          node - <<'EOF'
+          const fs = require("fs");
+          const path = require("path");
+          const yaml = require("js-yaml");
+
+          const REQUIRED_FIELDS = ["id", "tool", "signature", "title", "cause", "fix"];
+          const VALID_TOOLS = ["terraform", "kubernetes", "github-actions"];
+          let errors = [];
+
+          function walk(dir) {
+            for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, item.name);
+              if (item.isDirectory()) {
+                walk(full);
+              } else if (item.name.endsWith(".yaml") || item.name.endsWith(".yml")) {
+                const parsed = yaml.load(fs.readFileSync(full, "utf8"));
+                for (const field of REQUIRED_FIELDS) {
+                  if (!parsed[field]) errors.push(`${full}: missing required field "${field}"`);
+                }
+                if (parsed.tool && !VALID_TOOLS.includes(parsed.tool)) {
+                  errors.push(`${full}: invalid tool "${parsed.tool}"`);
+                }
+                if (parsed.signature) {
+                  try { new RegExp(parsed.signature); }
+                  catch { errors.push(`${full}: invalid regex in "signature"`); }
+                }
+              }
+            }
+          }
+
+          walk("knowledge-base");
+
+          if (errors.length) {
+            console.error(errors.join("\n"));
+            process.exit(1);
+          }
+          console.log("All knowledge base entries valid.");
+          EOF
+        shell: bash

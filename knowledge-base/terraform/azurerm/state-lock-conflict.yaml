@@ -1,0 +1,17 @@
+id: tf-state-lock-conflict
+tool: terraform
+provider: azurerm
+signature: "error acquiring the state lock"
+title: "Terraform state is locked by another run"
+cause: >
+  Another terraform plan/apply is currently running against the same state
+  file, or a previous run was interrupted (killed pipeline, network drop)
+  and left a stale lock behind in the remote backend.
+fix: |
+  First confirm no other run is genuinely in progress. If the lock is stale:
+    terraform force-unlock <lock-id>
+  For Azure Storage backends, the lock is a blob lease — you can also clear
+  it directly via the Storage Account if force-unlock fails. Avoid running
+  concurrent applies against the same workspace/state file going forward.
+tags: [terraform, state, azure, concurrency]
+confirmed_by: 1
