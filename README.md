@@ -4,6 +4,13 @@ A shared, open-source knowledge base and CLI for diagnosing DevOps and infrastru
 
 Stop re-solving the same infrastructure errors from scratch. When you hit a cryptic failure, `fixdb` matches it against a growing, community-maintained database of known errors and confirmed fixes. If nobody's seen it yet, it gives you an AI best-guess diagnosis — and helps you turn the confirmed fix into a new entry so the next person gets it instantly.
 
+## Prerequisites
+
+- **Node.js 18 or later** (npm comes bundled with it) — that's the only runtime fixdb itself needs. Check with `node -v`.
+- **git**, only if you're building from source before npm publishing, or contributing a fix.
+
+Nothing else is required to run `fixdb` — it's a single self-contained CLI. Tools like Terraform, `kubectl`, or the Azure CLI show up in the *fix* text it prints (since that's what you'd run to actually resolve the error), but fixdb doesn't call or depend on any of them itself.
+
 ## Quick start
 
 ```bash
