@@ -13,6 +13,8 @@ fixdb scan --tool kubernetes "CrashLoopBackOff"
 fixdb update              # pull the latest knowledge base entries from GitHub
 ```
 
+That's the whole setup — once published, `npm install -g fixdb` is a one-time step, and `fixdb` then runs from any terminal, in any directory, from then on. No need to clone this repo just to use it; cloning only matters if you're building from source before it's published (below), contributing to the CLI itself, or opening a PR to add a knowledge base entry (see [Contributing](#contributing)).
+
 The install ships with a bundled snapshot of the [knowledge base](./knowledge-base), seeded into `~/.fixdb/knowledge-base` on first use — matching works fully offline right away. Run `fixdb update` at any time to pull the latest entries from GitHub into that cache (defaults to this repo; point it elsewhere with `--repo <owner/repo> --ref <branch>`). Sync failures never block a scan — the CLI just falls back to the last-cached copy.
 
 ### Enabling the AI fallback
