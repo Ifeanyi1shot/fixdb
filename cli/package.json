@@ -4,7 +4,7 @@
   "description": "A shared, open-source knowledge base and CLI for diagnosing DevOps and infrastructure errors",
   "license": "MIT",
   "bin": {
-    "fixdb": "./dist/index.js"
+    "fixdb": "dist/index.js"
   },
   "main": "./dist/index.js",
   "files": [
