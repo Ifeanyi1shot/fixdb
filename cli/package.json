@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "description": "A shared, open-source knowledge base and CLI for diagnosing DevOps and infrastructure errors",
   "license": "MIT",
+  "author": "Ifeanyi Okeke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ifeanyi1shot/fixdb.git"
+  },
+  "homepage": "https://github.com/Ifeanyi1shot/fixdb#readme",
+  "bugs": {
+    "url": "https://github.com/Ifeanyi1shot/fixdb/issues"
+  },
   "bin": {
     "fixdb": "dist/index.js"
   },
@@ -17,7 +26,8 @@
     "build": "tsc -p . && node scripts/copy-kb.js",
     "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "test": "npm run build && node -r ts-node/register --test src/fingerprint.test.ts src/knowledgeBase.test.ts src/aiFallback.test.ts src/contribute.test.ts src/cli.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",

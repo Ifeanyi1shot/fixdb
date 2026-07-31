@@ -45,6 +45,16 @@ npm run build
 npm link          # makes the `fixdb` command available globally, pointing at this checkout
 ```
 
+## Development
+
+```bash
+cd cli
+npm install
+npm test    # builds, then runs the unit + CLI integration tests
+```
+
+Tests use Node's built-in test runner (`node:test`) via `ts-node/register` — no extra test framework dependency. They cover the fingerprinting/matching logic, the AI-fallback response parsing, the `contribute` draft generator, and a handful of end-to-end smoke tests that spawn the built CLI directly. CI runs the same suite on every PR touching `cli/**` (see `.github/workflows/test-cli.yml`).
+
 ## How it works
 
 1. **Fingerprint** — the raw error is normalized (UUIDs, IPs, timestamps, paths stripped out) so the same error from different environments matches the same entry.
